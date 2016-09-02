@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Cron and Command line in Node.js</title>
+  <meta name="description" content="I found out that Macs don&amp;#8217;t have cron, like in linux. They do have something similar called launchd, but I wanted to execute something as admin, and al...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://jordenlowe.com//2013/08/09/cron-and-command-line-in-node-js/">
+  <link rel="alternate" type="application/rss+xml" title="Jorden Lowe&#39;s Blog" href="http://jordenlowe.com//feed.xml">
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Jorden Lowe&#39;s Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about.html">About the author</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Cron and Command line in Node.js</h1>
+    <p class="post-meta"><time datetime="2013-08-08T20:00:00-04:00" itemprop="datePublished">Aug 8, 2013</time> • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Jorden</span></span></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p> I found out that Macs don&#8217;t have cron, like in linux. They do have something similar called launchd, but I wanted to execute something as admin, and all sorts of stuff. Luckily, my favorite platform, node, has a <a href="https://github.com/ncb000gt/node-cron">cron</a> and a <a href="http://nodejs.org/api/child\_process.html">command line</a> to simulate a cron system. </p>
+<p> First thing to get use to is the format. It is simple, but there are some things that you need to know about it. There is 6 fields, seperated by a space. Each field is a time slot, so first is second, minute, hour, day of month, month, day of the week. After that, you have to tell how each field should run, let&#8217;s check out the table below: </p>
+<table class="table table-striped"> <thead> <tr> <th> Symbol </th> <th> Meaning </th> <th> Example </th> </tr> </thead> <tbody> <tr> <td> \* </td> <td> Star means run on all options for that field </td> <td> i.e. \* \* \* \* \* \* &#8211; means run every second of every minute of every hour, and so on. </td> </tr> <tr> <td> # </td> <td> Placing a number means to run it specifically for that field. </td> <td> i.e. 1 \* \* \* \* \* &#8211; means to run every minute, only on the first second. </td> </tr> <tr> <td> , </td> <td> Placing a comma between numbers tells the cron job multiple runnings. </td> <td> i.e. 3,5,7,9 \* \* \* \* \* &#8211; means to run every minute, on the 3rd, 5th, 7th and 9th second. (so 4 times a minute) </td> </tr> <tr> <td> &#8211; </td> <td> A dash creates a range. </td> <td> i.e. 3-10 \* \* \* \* \* &#8211; means run on the 3rd, 4th, 5th, 6th, 7th, 8th, 9th, 10th second of every minute. (8 times) </td> </tr> <tr> <td> / </td> <td> Divide the section and run it every time it is divisable by that number. </td> <td> i.e. \*/10 \* \* \* \* \* &#8211; run every 10 seconds, \* \*/10 \* \* \* \* &#8211; run every 10 minutes </td> </tr> </tbody> </table>
+<p> Those are the rules. There are more, but these are good enough to describe what timings you may need. Let&#8217;s check out some code then: </p>
+<pre class="formatCode"> var cronJob = require('cron').CronJob; new cronJob('\* \* \* \* \* \*', function(){ console.log('You will see this message every second'); }, null, true, "America/Los\_Angeles"); </pre>
+<p> So that code is pretty simple, it runs every second and prints to console. Let&#8217;s now add some command line code: </p>
+<pre class="formatCode"> var obj = new Date(); var filename = obj.getFullYear()+"\_"+(obj.getMonth()+1)+"\_"+obj.getDate()+"\_"+obj.getHours()+"\_"+obj.getMinutes(); child = exec("redis-cli INFO &gt; "+filename+".txt", function (error, stdout, stderr) { if(stderr){ sys.print('error: ' + stderr); } } ); }, function(){}, true); </pre>
+<p> I have been working with redis, and needed to output command information to a text file, so I created this script to create log file from redis. Now, if we put all of this together: </p>
+<pre class="formatCode"> var sys = require('sys') var exec = require('child\_process').exec; var child; var cronJob = require('cron').CronJob; var a = new cronJob('0 0 \* \* \* \*', function(d){ var obj = new Date(); var val = obj.getFullYear()+"\_"+(obj.getMonth()+1)+"\_"+obj.getDate()+"\_"+obj.getHours()+"_"+obj.getMinutes(); child = exec("redis-cli INFO &gt; "+val+".txt", function (error, stdout, stderr) { if(stderr){ sys.print('error: ' + stderr); } } ); }, function(){}, true); </pre>
+<p> This code runs every first second, of the first minute, every hour, to log a text file from redis, with a file name based on the date time. Booooooooom! </p>
+
+  </div>
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Jorden Lowe&#39;s Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Jorden Lowe&#39;s Blog</li>
+          <li><a href="mailto:jordenashleylowe@gmail.com">jordenashleylowe@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/supermitsuba"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">supermitsuba</span></a>
+
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/JordenLowe"><span class="icon icon--twitter"><svg viewBox="0 0 16 16"><path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/></svg>
+</span><span class="username">JordenLowe</span></a>
+
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>Blog to help me remember all the technology out there.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

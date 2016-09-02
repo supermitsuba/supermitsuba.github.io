@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Meta Programming with Razor</title>
+  <meta name="description" content="Have some programs that require developer time? Want to cut down the developer time needed? Razor engine may help. While it has been used mainly in ASP.net M...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://jordenlowe.com//2013/07/29/meta-programming-with-razor/">
+  <link rel="alternate" type="application/rss+xml" title="Jorden Lowe&#39;s Blog" href="http://jordenlowe.com//feed.xml">
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Jorden Lowe&#39;s Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about.html">About the author</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Meta Programming with Razor</h1>
+    <p class="post-meta"><time datetime="2013-07-28T20:00:00-04:00" itemprop="datePublished">Jul 28, 2013</time> • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Jorden</span></span></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p> Have some programs that require developer time? Want to cut down the developer time needed? Razor engine may help. While it has been used mainly in ASP.net MVC, I have been using it to help fix issues I have had with jobs that needed to be developed quickly. Let me show some examples of how it can help. </p>
+<div class="alert"> <strong>Warning!</strong> First things first, you have to know what to use with the Razor Engine. If it doesn&#8217;t make sense to make something dynamic, don&#8217;t shoe horn it into the design because it&#8217;s the cool thing to do. </div>
+<p> Now, say we have a program that is creating reports for various clients. You know each client has their own silly requirements, because, you know, the customer is always right. Now the first thing we want to do is create an object that is central to the operation of this application. Say an object that contains the client, and some reporting data. </p>
+<pre class="formatCode"> public class Report { public Client Customer { get; set; } public ICollection<lineItem> item { get; set; } public string FileNameFormat { get; set; } public string ReportFormat { get; set; } } public class Client { public string Name {get;set;} public string Address {get;set;} public string ExternalClientId{get;set;} public string Id {get;set;} } public class LineItem { public string Name{get;set;} public string Description{get;set;} public decimal Price {get;set;} public DateTime DateOfItem {get;set;} } &lt;/pre&gt; <p> So, this is the central object model the application is representing. Now you might have multiple Reports that you need to create for multiple clients. Let&#8217;s create a couple of customers and what the ordered. </p> <pre class="formatCode"> //get this from the database, or whereever. public static ICollection<report> GetCustomers() { List<report> results = new List<report>() { new Report(){ Customer=new Client(){ Name="ABC Computers", Address="123 Easy Street", ExternalClientId=Guid.NewGuid().ToString(), Id="1" }, item=new List<lineItem>(){ new LineItem(){ Name="Modems", Description="Thing to get on the interwebs", Price=100.0m, Count=3, DateOfItem=DateTime.Now.AddDays(-5) }, new LineItem(){ Name="Monitor", Description="Thing to show you the interwebs", Price=200.0m, Count=5, DateOfItem=DateTime.Now.AddDays(-3) } } }, new Report(){ Customer=new Client(){ Name="Derp Computers", Address="246 Derp Street", ExternalClientId=Guid.NewGuid().ToString(), Id="3" }, item=new List<lineItem>(){ new LineItem(){ Name="Hard drive", Description="Thing to save stuff from the interwebs", Price=80.0m, Count=6, DateOfItem=DateTime.Now.AddDays(-2) }, new LineItem(){ Name="CPU", Description="Thing to process the interwebs", Price=150.0m, Count=5, DateOfItem=DateTime.Now.AddDays(-1) } } }, new Report(){ Customer=new Client(){ Name="Rofl Computers", Address="369 Easy Street", ExternalClientId=Guid.NewGuid().ToString(), Id="2" }, item=new List<lineItem>(){ new LineItem(){ Name="Monitor", Description="Thing to show you the interwebs", Price=200.0m, Count=10, DateOfItem=DateTime.Now.AddDays(-10) } } }, }; return results; } &lt;/pre&gt; <p> Now that we got some sample data, let&#8217;s take a look at the two property on Report: <em>FileNameFormat</em> and <em>ReportFormat</em>. These fields are going to use Razor to help create the format we need. So, let&#8217;s assign them: </p> <pre class="formatCode"> //ABC Computers like their file name formatted like this: results[0].FileNameFormat = "@(Model.Customer.ExternalClientId+DateTime.Now.ToString(\"MMddyyyy\") +\".csv\")"; //ABC Computers likes their files generated like this: results[0].ReportFormat = "@{ var format =\"\"; foreach (var item in Model.item) { format += item.DateOfItem + \",\" + item.Name + \",\" + item.Description + \",\" + item.Price + \",\" + item.Count.ToString()+Environment.NewLine; } }@(format)"; //Derp Computers like their file name formatted like this: results[0].FileNameFormat = "@(Model.Customer.ExternalClientId+DateTime.Now.ToString(\"MMddyyyy\") +\".txt\")"; //Derp Computers likes their files generated like this: results[0].ReportFormat = "@{ var format =\"\"; foreach (var item in Model.item) { format += item.DateOfItem + \"|\" + item.Name + \"|\" + item.Price + \"|\" + item.Count.ToString()+Environment.NewLine; } }@(format)"; //Rofl Computers like their file name formatted like this: results[0].FileNameFormat = "@(Model.Customer.ExternalClientId +\".csv\")"; //Rofl Computers likes their files generated like this: results[0].ReportFormat = "@{ var format =\"\"; foreach (var item in Model.item) { format += item.DateOfItem + \",\" + item.Name + \",\" + item.Price + \",\" + item.Count.ToString()+Environment.NewLine; } }@(format)"; </pre> <p> This may look like crazyiness, but it makes sense, it just looks like barf when we format it into a string. If you take these items and read them in with new line formats, they can look like regular old Razor syntax you are accustom to seeing. Let&#8217;s take ABC Computer&#8217;s Report format to show how this can look: </p> <pre class="formatCode"> @{ var format =\"\"; foreach (var item in Model.item) { format += item.DateOfItem + \",\" + item.Name + \",\" + item.Description + \",\" + item.Price + \",\" + item.Count.ToString()+Environment.NewLine; } } @(format) </pre> <p> What it does is it builds up a csv string, then returns it in the variable format. You can check out more about Razor <a href="http://www.w3schools.com/aspnet/razor_syntax.asp">here.</a> Now all this is great, but how does this all fit? One more thing, and that&#8217;s the razor generation code: </p> <pre class="formatCode"> static void Main(string[] args) { var templateService = new TemplateService(new FluentTemplateServiceConfiguration(c =&gt; c.WithEncoding(RazorEngine.Encoding.Raw))); RazorEngine.Razor.SetTemplateService(templateService); var results = GetCustomers(); foreach (var customer in results) { string fileName = RazorEngine.Razor.Parse(customer.FileNameFormat, customer); string fileContents = RazorEngine.Razor.Parse(customer.ReportFormat, customer); File.WriteAllText(fileName, fileContents); } } /\* The output of the files are : ABC Computers FileName - 1da68569-f847-4381-95e1-50e93da8c2ce07292013.csv ABC Computers File: 7/24/2013 3:55:00 PM,Modems,Thing to get on the interwebs,100.0,3 7/26/2013 3:55:00 PM,Monitor,Thing to show you the interwebs,200.0,5 Derp Computer FileName - 1d201f40-935e-47ba-8117-68ca347f250c07292013.txt Derp Computers File: 7/27/2013 3:55:00 PM|Hard drive|80.0|6 7/28/2013 3:55:00 PM|CPU|150.0|5 Rofl Computers FileName - 5260b320-38e7-406e-b178-99f383eda2f1.csv Rofl Computers File: 7/19/2013 3:55:00 PM,Monitor,200.0,10 \*/ </pre> <p> The code above shows some Razor configuration stuff. Basically we want Raw encoding because Html encoding will encode strings for Html by default. It is a good note to bring up 2 issues with the library: </p> <div class="alert alert-info"> <strong>1)</strong> It will store templates into memory, because it is compiling at runtime. Be sure generate the template, and save it. (there are functions to store templates for repeat use without memory leaks.) </div> <div class="alert alert-error"> <strong>2)</strong> This will run as the user running the code, so you may not want a user injecting malicious code into the templates. </div> <p> Outside of those 2 things, I have developed an application to allow us to write customer specific code, but super quickly. One of the things we are working on is creating a UI around razor, so that we allow normies to write this, and eliminate need for development to solve new problems. If you got suggestions drop a line in the comments field. </p>
+</lineItem></lineItem></lineItem></report></report></report></pre></lineItem></pre>
+
+  </div>
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Jorden Lowe&#39;s Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Jorden Lowe&#39;s Blog</li>
+          <li><a href="mailto:jordenashleylowe@gmail.com">jordenashleylowe@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/supermitsuba"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">supermitsuba</span></a>
+
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/JordenLowe"><span class="icon icon--twitter"><svg viewBox="0 0 16 16"><path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/></svg>
+</span><span class="username">JordenLowe</span></a>
+
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>Blog to help me remember all the technology out there.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

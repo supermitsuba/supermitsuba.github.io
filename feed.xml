@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Jorden Lowe's Blog</title>
+    <description>Blog to help me remember all the technology out there.
+</description>
+    <link>http://jordenlowe.com//</link>
+    <atom:link href="http://jordenlowe.com//feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Thu, 01 Sep 2016 22:02:26 -0400</pubDate>
+    <lastBuildDate>Thu, 01 Sep 2016 22:02:26 -0400</lastBuildDate>
+    <generator>Jekyll v3.2.1</generator>
+    
+      <item>
+        <title>Docker shared space</title>
+        <description>&lt;p&gt;Much of the docker stuff is coming together, but it has been slow.  So far I have learned how to get state saved in a VM!  It is easy actually and documented, but you have to watch out for a few details.&lt;/p&gt;
+
+&lt;p&gt;So you use -v like something like this:&lt;/p&gt;
+
+&lt;pre class=&quot;lang:default decode:true &quot;&gt;sudo docker run -d \
+  -p 3306:3306 \
+  -e MYSQL_PASS=&quot;password&quot; \
+  -e MYSQL_USER=&quot;root&quot; \
+  -v /var/apps/mysql/1:/var/lib/mysql  \
+  --name db \
+    mysql:latest&lt;/pre&gt;
+
+&lt;p&gt;But, the things to watch out for is what you share.  It is advised to use this directory as a read-only from the host perspective.  This is because you can get into some weird OS lock magic.&lt;/p&gt;
+
+&lt;p&gt;The other gotcha is that don’t share a directory that is needed for configuration or binaries.  I think eariler I was doing that and it was deleting my directory in the container for some reason.&lt;/p&gt;
+
+&lt;p&gt;This makes me think, if you have a directory that will be RW for a container and Read Only for host, then go ahead and use it.  Dont share out bin directories because the container will freak out and stop.&lt;/p&gt;
+</description>
+        <pubDate>Mon, 11 Jul 2016 22:52:43 -0400</pubDate>
+        <link>http://jordenlowe.com//2016/07/12/docker-shared-space/</link>
+        <guid isPermaLink="true">http://jordenlowe.com//2016/07/12/docker-shared-space/</guid>
+        
+        <category>docker</category>
+        
+        
+        <category>any</category>
+        
+        <category>general</category>
+        
+      </item>
+    
+      <item>
+        <title>Docker Linking</title>
+        <description>&lt;p&gt;I have been working on docker stuff for the past few weeks.  The biggest reason is to spin up our whole development environment together.  This can be complicated because of all the vm’s, frameworks and databases we have in our development environment.  While I wanted to use docker-compose, I wanted to know what it would take for one to get a docker instance up from scratch.&lt;/p&gt;
+
+&lt;p&gt;The idea of docker is that everything is in it’s own container, and that containers should use child containers.  So I made a few containers:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;base – This has stuff like git, wget, etc.  Any tools needed for a VM/Container and the base OS to use, like Ubuntu.&lt;/li&gt;
+  &lt;li&gt;MySQL -A service to store data.&lt;/li&gt;
+  &lt;li&gt;Ruby – A base image with all my ruby dependencies&lt;/li&gt;
+  &lt;li&gt;code – Uses the ruby base image and then links to mysql.  This is where my web service lives&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;That is a bunch of dockerfiles, and while experimenting, I made a bunch of space on my hard drive.  There are some handy scripts to help, like this one:&lt;/p&gt;
+
+&lt;pre class=&quot;lang:default decode:true &quot;&gt;docker rmi $(docker images -q -f dangling=true)&lt;/pre&gt;
+
+&lt;p&gt;This script will delete any images and containers that are not taged anymore.&lt;/p&gt;
+
+&lt;p&gt;For starting the Base image, this was simple enough.  Just add a bunch of software, like wget, git, curl, vim.  This also used ubuntu 14.04 for the VM.&lt;/p&gt;
+
+&lt;p&gt;For the mysql database, I found a docker image that I liked; https://github.com/tutumcloud/mysql .  I like this one because you can just start up an instance immediately, give it your username and password to use, and you are done.  This image is using my Base image from above, so it will have all the tools on the container.&lt;/p&gt;
+
+&lt;p&gt;For my Ruby image, this installed all the tools and prerequisites that I need for Ruby, like rbenv, ruby, mysql clients and etc.  This makes it so every time I make a new web service or site, it takes seconds to create a new environment.&lt;/p&gt;
+
+&lt;p&gt;Now, for my Code image, I need to reference the mysql database image.  This is so in my configuration, i will put down my username, password and servername (this comes later with linking).  But for this I just pull down the code and run bundle install.&lt;/p&gt;
+
+&lt;p&gt;Build your machines:&lt;/p&gt;
+
+&lt;pre class=&quot;lang:default decode:true&quot;&gt;docker build -t base:latest .
+docker build -t mysql:latest .
+docker build -t ruby:latest .
+docker build -t code:latest .&lt;/pre&gt;
+
+&lt;p&gt;Start up your mysql instance:&lt;/p&gt;
+
+&lt;pre class=&quot;lang:default decode:true&quot;&gt;docker run -d -p 3306:3306 -e MYSQL_PASS=&quot;password&quot; MYSQL_USER=&quot;root&quot; --name db mysql:latest&lt;/pre&gt;
+
+&lt;p&gt;In the mysql instance,  I have a –name db.  If I want to reference a database in code, all I have to do is make the hostname ‘db’.&lt;/p&gt;
+
+&lt;p&gt;Next, initialize database stuff in Ruby with db:setup.  In the command below, I will be put on a prompt in a container.  This helps me initialize the database when I have to run db:setup.  You can do this with run -it and at the end /bin/bash:&lt;/p&gt;
+
+&lt;pre class=&quot;lang:default decode:true &quot;&gt;sudo docker run -it code --name web2 --link db:db code:latest /bin/bash&lt;/pre&gt;
+
+&lt;p&gt;Boom done.  Next, start your code (notice, i use the same image, but this time I used -d instead of -it.  This runs it in the background):&lt;/p&gt;
+
+&lt;pre class=&quot;lang:default decode:true &quot;&gt;sudo docker run -d -p 3000:3000 --name web --link db:db code:latest&lt;/pre&gt;
+
+&lt;p&gt;Notice, that you have a “link” to db as db.  In your configuration, your code will think db is a server name and will be able to connect to it.&lt;/p&gt;
+
+&lt;p&gt;You should have a full environment set up for testing.   I will post my dockerfiles on github to help show these work together.  Later, I will be talking about persisting the database stuff, and how all this relates to docker compose.&lt;/p&gt;
+</description>
+        <pubDate>Sun, 10 Jul 2016 22:33:12 -0400</pubDate>
+        <link>http://jordenlowe.com//2016/07/11/docker-linking/</link>
+        <guid isPermaLink="true">http://jordenlowe.com//2016/07/11/docker-linking/</guid>
+        
+        <category>docker</category>
+        
+        
+        <category>general</category>
+        
+      </item>
+    
+      <item>
+        <title>Post on Hypermedia API&amp;#8217;s in Ruby</title>
+        <description>&lt;p&gt;Here is a good link on Hypermedia API’s in Ruby.  It also describes how to version, which is another great topic.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.bignerdranch.com/blog/adding-versions-rails-api/&quot;&gt;https://www.bignerdranch.com/blog/adding-versions-rails-api/&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Wed, 15 Jun 2016 00:40:26 -0400</pubDate>
+        <link>http://jordenlowe.com//2016/06/15/post-on-hypermedia-apis-in-ruby/</link>
+        <guid isPermaLink="true">http://jordenlowe.com//2016/06/15/post-on-hypermedia-apis-in-ruby/</guid>
+        
+        <category>Hypermedia</category>
+        
+        <category>REST</category>
+        
+        <category>ruby</category>
+        
+        <category>versioning</category>
+        
+        
+        <category>ruby</category>
+        
+        <category>web</category>
+        
+      </item>
+    
+      <item>
+        <title>Parsing Exceptions in Ruby</title>
+        <description>&lt;p&gt;One thing that is very subtle in Ruby that is an issue is how parsing works.  Say you have an Integer in C#, you would probably code something like this:&lt;/p&gt;
+
+&lt;pre class=&quot;lang:c# decode:true &quot;&gt;Int32.TryParse(value, out number);&lt;/pre&gt;
+
+&lt;p&gt;But, if you look at Ruby, it is something like this:&lt;/p&gt;
+
+&lt;pre class=&quot;lang:ruby decode:true&quot;&gt;def parse_integer(number) 
+  Integer(number) 
+rescue ArgumentError 
+  nil 
+end&lt;/pre&gt;
+
+&lt;p&gt;While I could do the same logic in C# as in Ruby, the difference is the exception handling.  The problem is that throwing exceptions are way slower to handle.  Worse yet, it does not enforce trying to code as much as you can around exceptions.&lt;/p&gt;
+
+&lt;p&gt;I get it that Ruby is meant to get something up and running quickly.  But if we don’t have good practices like the tryparse function above, then we are writing slower code every time.&lt;/p&gt;
+
+&lt;p&gt;&amp;lt;/end_rant&amp;gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 11 Jun 2016 23:52:37 -0400</pubDate>
+        <link>http://jordenlowe.com//2016/06/12/parsing-exceptions-in-ruby/</link>
+        <guid isPermaLink="true">http://jordenlowe.com//2016/06/12/parsing-exceptions-in-ruby/</guid>
+        
+        <category>exceptions</category>
+        
+        <category>ruby</category>
+        
+        
+        <category>ruby</category>
+        
+      </item>
+    
+      <item>
+        <title>The dynamic typing problem in Ruby (and javascript, python, and etc&amp;#8230;)</title>
+        <description>&lt;p&gt;In working with Ruby the past 2 months, I have noticed my normal programming mojo was off.  While I was able to navigate the codebase, I was unsure what I was doing.  I thought that maybe .net was the only thing I could ever program in because I wasn’t getting this whole ruby thing.  But that isn’t it, I programmed a bunch in javascript (node.js) and never had a problem.  Maybe I can’t tolerate other people’s code?  No, I have worked in the software industry for more than 9 years and haven’t had a problem and let me tell you, I have seen some shit code.&lt;/p&gt;
+
+&lt;p&gt;Then it hits me, of course this code is hard to read, cause I don’t know the domain.  So, I talk with the fellow programmers on my team.  Nope, I have the right assumptions and I’m asking the right questions.  So, why am I so unproductive in switching to Ruby?&lt;/p&gt;
+
+&lt;p&gt;Dynamic languages suck in one regard, there is no type system!&lt;/p&gt;
+
+&lt;p&gt;There, I said it.  Mind you, I think it is a plus too, but it sucks.  I don’t think they need a full blow type system, but there is a lacking in the interface department.  For instance, look at this code:&lt;/p&gt;
+
+&lt;pre class=&quot;lang:default decode:true&quot;&gt;def parse_html_for_escape_characters(html, options)
+  ...
+end&lt;/pre&gt;
+
+&lt;p&gt;Sweet! I need a function to parse my html and transform the escaped characters.  Simple enough, but there are 3 questions about that code, what is the return and what are the 2 parameters being passed in?  I could think that the return type is a new string of html, but it could be an object.  Same for the html variable I passed in.  What about that options variable?  Who the fuck knows what that object is.&lt;/p&gt;
+
+&lt;p&gt;There are 2 schools of thought on this, one is my code should be expressive enough to tell what it is.  The other is that you should have documentation.  BOTH ARE WRONG IN RUBY.  If your code was expressive enough, it would have some type information to tell me what to expect when calling this method.  I could read the implementation of the code, but isn’t that what OOP is suppose to stop me from?  I shouldn’t have to read the implementation of the code because it could be a library, or code I don’t have access to.  Reading the implementation of the code shouldn’t be the go to answer.  Worst yet, when the options parameter gets passed around like shots at a party.  Who knows when and where methods or properties you need to call are actually at.&lt;/p&gt;
+
+&lt;p&gt;Equally as dubious, you should have documentation for the code.  I agree, if you are discipline enough you should have code documentation all over the place.  But remember, developers are lazy sons of bitches.  They won’t document shit unless it is a public method, and worse yet, a private method.  Also, think about your boss who doesn’t give a shit about documentation, they just want to ship features.  Mind you this is a separate discussion, but the fact remains that developers won’t document their code and the function signatures are bullshit for conveying the correct usage of a function.&lt;/p&gt;
+
+&lt;p&gt;Interfaces are solutions!?&lt;/p&gt;
+
+&lt;p&gt;I get it, nobody likes Java, but there is a point to type systems.  They warn you about a bone headed compiler error.  Immediately!  One argument against type systems is that this does not add any code correctness, and only unit tests would provide that.  True to an extent, but what code do you work on that provides 100%+ code coverage?  Not only that, are you wasting time writing unit tests that would have been covered by a compiler in the first place?&lt;/p&gt;
+
+&lt;p&gt;Look, I get it, everyone wants to think that their language is the best for everything forever.  But its not, while every language is slightly different, they come from the same family of languages( function, object oriented, etc.) and they are either statically or dynamically typed.  So, now that we got off our high horse about how Ruby is the same as any other OOP language (c++/java/c#), let’s think about some solutions to our above problem.&lt;/p&gt;
+
+&lt;p&gt;Interfaces provide a mechanism for us programmers to know where to color in the lines of a painting.  They also have a hidden benefit to enforce a developer, who otherwise has zero time to document, to document.  This guy:  &lt;a href=&quot;http://victorsavkin.com/post/44861723903/i-wish-ruby-had-interfaces&quot;&gt;http://victorsavkin.com/post/44861723903/i-wish-ruby-had-interfaces&lt;/a&gt;  has a good article on what it provides us to get interfaces, and he programmed in dynamic languages as much as me in .net.  I think it is important to take away what advantages we can give ourselves in a language, instead of shutting down and saying we can’t.  We have always done it this way is not an excuse to not change.&lt;/p&gt;
+
+&lt;p&gt;If you want to include more developers to your platform or take the language seriously, it needs to adapt to changes.  Look at javascript.  It has a transpiler called Typescript which brings a shitload to the table in terms of types.  Microsoft made it, so everyone hates it.  But guess what, google is using it for Angular.js. The main reasons? Because types make things clearer.  Maybe Ruby needs something like this so I don’t have to go through the spaghetti of shit code at work.&lt;/p&gt;
+</description>
+        <pubDate>Mon, 30 May 2016 01:13:21 -0400</pubDate>
+        <link>http://jordenlowe.com//2016/05/30/the-dynamic-typing-problem-in-ruby-and-javascript-python-and-etc/</link>
+        <guid isPermaLink="true">http://jordenlowe.com//2016/05/30/the-dynamic-typing-problem-in-ruby-and-javascript-python-and-etc/</guid>
+        
+        <category>dynamic</category>
+        
+        <category>dynamic languages</category>
+        
+        <category>interface</category>
+        
+        <category>javascript</category>
+        
+        <category>OOP</category>
+        
+        <category>ruby</category>
+        
+        <category>typescript</category>
+        
+        
+        <category>.net</category>
+        
+        <category>javascript</category>
+        
+        <category>ruby</category>
+        
+        <category>web</category>
+        
+      </item>
+    
+      <item>
+        <title>Concurrency in Ruby</title>
+        <description>&lt;p&gt;When first reading about ruby, the first thing that made me worried was I/O bound processes.  Lot of people bashed ruby for the GIL (global interpreter lock) and said that it made ruby slow.  But if you look at the &lt;a href=&quot;https://github.com/ruby-concurrency/concurrent-ruby&quot;&gt;ruby-concurrent&lt;/a&gt; library, it looks as though ruby can handle asynchronous transactions.  It has support going back to &lt;a href=&quot;https://www.ruby-lang.org/en/news/2011/10/31/ruby-1-9-3-p0-is-released/&quot;&gt;ruby 1.9.3&lt;/a&gt;, which was release in 2011.&lt;/p&gt;
+
+&lt;p&gt;So to test it myself, I decided to write some code to see how it worked.  First I created a quick node.js server to give me a web call to test.  In the server, I added random timeouts for a response, ranging from 500 ms to 3 seconds.  This would allow me to see if I made, say 11 requests at once, that I should see those requests return in order of the smallest random timeout to the largest.  Here is the code I wrote:&lt;/p&gt;
+
+&lt;pre class=&quot;lang:default decode:true&quot; title=&quot;Web Service Code&quot;&gt;var express = require('express');
+var app = express();
+
+app.get('/api/test/:id', function (req, res) {
+  var time = randomIntFromInterval(500, 3000);
+  var currentTime = Math.floor(new Date() / 1000);
+  var id = req.param('id');
+
+  console.log(currentTime + &quot; @ Waiting for : &quot;+ time + &quot; seconds. ID &quot; + id);
+  this.setTimeout(function() {
+    res.send('Hello World!');
+  }, time);
+});
+
+app.listen(3500, function () {
+  console.log('Example app listening on port 3500!');
+});
+
+function randomIntFromInterval(min,max)
+{
+    return Math.floor(Math.random()*(max-min+1)+min);
+}
+&lt;/pre&gt;
+
+&lt;p&gt;Next, I used ruby-concurrent to make 11 web calls at a time asynchronously.  After the 11 calls, I would call sleep for 3 seconds.  Here is that code:&lt;/p&gt;
+
+&lt;pre class=&quot;lang:default decode:true &quot; title=&quot;Ruby Concurrent Code&quot;&gt;require 'concurrent'
+require 'rest-client'
+
+class ThreadTest
+  include Concurrent::Async
+
+  def WebCall(number)
+    puts &quot;Started #{number}&quot;
+    RestClient.get &quot;http://localhost:3500/api/test/#{number}&quot;
+    puts &quot;Completed #{number}&quot;
+  end
+
+end
+
+i = 0
+while true do
+  test = ThreadTest.new
+  test.async.WebCall i
+
+  if i % 11 == 0
+    sleep(3)
+  end
+
+  i = i + 1
+end&lt;/pre&gt;
+
+&lt;p&gt;What I saw was that ruby would make the 11 calls, but print them out of order.  But that is fine because when you make 11 async calls, you would expect them to be thrown on a queue and processed slightly out of order because of how async can work.  Here is the output of the ruby code:&lt;/p&gt;
+
+&lt;pre class=&quot;lang:default decode:true&quot;&gt;Started 2
+Started 1
+Started 3
+Started 4
+Started 5
+Started 6
+Started 7
+Started 8
+Started 9
+Started 11
+Started 10
+Completed 8
+Completed 10
+Completed 11
+Completed 9
+Completed 6
+Completed 7
+Completed 1
+Completed 2
+Completed 3
+Completed 5
+Completed 4&lt;/pre&gt;
+
+&lt;p&gt;Now, what I imagine would happen is that the completed order on the client would match the server random times, which is exactly what happened:&lt;/p&gt;
+
+&lt;pre class=&quot;lang:default decode:true&quot;&gt;1460602540 @ Waiting for : 1774 seconds. ID 1
+1460602540 @ Waiting for : 2193 seconds. ID 2
+1460602540 @ Waiting for : 1392 seconds. ID 11
+1460602540 @ Waiting for : 1442 seconds. ID 9
+1460602540 @ Waiting for : 1518 seconds. ID 6
+1460602540 @ Waiting for : 1234 seconds. ID 8
+1460602540 @ Waiting for : 1700 seconds. ID 7
+1460602540 @ Waiting for : 1378 seconds. ID 10
+1460602540 @ Waiting for : 2562 seconds. ID 5
+1460602540 @ Waiting for : 2336 seconds. ID 3
+1460602540 @ Waiting for : 2858 seconds. ID 4&lt;/pre&gt;
+
+&lt;p&gt;You can see that 8 had the shortest response time, and so it finished first, followed by 10 and 11 and so on.  This is cool cause this validates that ruby is keeping up with what features other languages are using in their frameworks, too.  Not just Node, C#, or even Erlang are asynchronous, but so is ruby.  Now, why it is slow may be other issues, like the package sprawl that is in ruby on rails, but that is another issue I will be looking into to see how we can get the best performance out of our platform.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 13 Apr 2016 23:39:17 -0400</pubDate>
+        <link>http://jordenlowe.com//2016/04/14/concurrency-in-ruby/</link>
+        <guid isPermaLink="true">http://jordenlowe.com//2016/04/14/concurrency-in-ruby/</guid>
+        
+        <category>concurrency</category>
+        
+        <category>concurrent-ruby</category>
+        
+        <category>ruby</category>
+        
+        <category>web api</category>
+        
+        
+        <category>ruby</category>
+        
+        <category>web</category>
+        
+      </item>
+    
+      <item>
+        <title>Ruby at the new Job</title>
+        <description>&lt;p&gt;Hello all.  I have since switched from Quicken Loans to Panasonic, and it is a big switch.  I now am in the Ruby space, which means relearning all the tools I once knew.  But it’s not all bad, Ruby has many similarities that make it easy to jump into.  I wanted to chat about those similarities and what I have seen so far in Ruby, compared to .net.&lt;/p&gt;
+
+&lt;p&gt;Here is a quick list of things I have noticed so far:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;ruby -&amp;gt; C#&lt;/li&gt;
+  &lt;li&gt;ruby on rails -&amp;gt; ASP.net MVC/Web API&lt;/li&gt;
+  &lt;li&gt;ActiveRecord -&amp;gt; Entity framework&lt;/li&gt;
+  &lt;li&gt;gem -&amp;gt; nuget&lt;/li&gt;
+  &lt;li&gt;bundler -&amp;gt; nuget install&lt;/li&gt;
+  &lt;li&gt;modules -&amp;gt; extension methods&lt;/li&gt;
+  &lt;li&gt; puts -&amp;gt; console&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;So that’s a quick list of what I have compiled so far as the shift in tools I have known.  Its not to bad, although I did create a Vagrant VM to save my development environment, which I could never do on windows without imaging everything.  But I do hate to debug in the console for some reason, I am hoping I get over that too.  Since I got my VM and now a simple &lt;a href=&quot;https://github.com/supermitsuba/SMSpiRuby&quot;&gt;Rest API&lt;/a&gt; under my belt, I should be good for next week.&lt;/p&gt;
+</description>
+        <pubDate>Sun, 10 Apr 2016 01:21:35 -0400</pubDate>
+        <link>http://jordenlowe.com//2016/04/10/ruby-at-the-new-job/</link>
+        <guid isPermaLink="true">http://jordenlowe.com//2016/04/10/ruby-at-the-new-job/</guid>
+        
+        <category>ruby</category>
+        
+        
+        <category>general</category>
+        
+        <category>ruby</category>
+        
+        <category>web</category>
+        
+      </item>
+    
+      <item>
+        <title>Create Serializable Classes from Json or XML</title>
+        <description>&lt;p&gt;Something I wish I would have known sooner, you can create models based on a json or xml file in Visual Studio.  Just go to EDIT -&amp;gt; Paste special and select whatever format you may have.  You must be in a .cs file for it to work.&lt;/p&gt;
+
+&lt;p&gt;This saves so much time.  Here is a StackOverflow article about it: &lt;a href=&quot;http://stackoverflow.com/questions/4203540/generate-c-sharp-class-from-xml&quot;&gt; http://stackoverflow.com/questions/4203540/generate-c-sharp-class-from-xml&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Thu, 17 Mar 2016 13:34:40 -0400</pubDate>
+        <link>http://jordenlowe.com//2016/03/17/create-serializable-classes-from-json-or-xml/</link>
+        <guid isPermaLink="true">http://jordenlowe.com//2016/03/17/create-serializable-classes-from-json-or-xml/</guid>
+        
+        <category>.net</category>
+        
+        <category>json</category>
+        
+        <category>XML</category>
+        
+        
+        <category>.net</category>
+        
+      </item>
+    
+      <item>
+        <title>RamlSharp and Web API Help Pages</title>
+        <description>&lt;p&gt;I have been trying to see why attribute-based routing works, and convention-based routing doesn’t work.  I had to debug a convention-based Web API to find out.  What I found out was how Web API Help Pages APIs gets routes.&lt;/p&gt;
+
+&lt;p&gt;The issue with convention-based routing is that it writes one record for a route template, then has multiple routes under that.  Attribute-based routing works the exact opposite.  It adds a “route template” for each route.&lt;/p&gt;
+
+&lt;p&gt;Instead of using the route template, I might be able to use RelativePath and look at the ParameterDescriptor instead.  This should be able to get the correct routes with parameters.  Of course I will have to test this all out, but I should be able to support convention-based routing again.&lt;/p&gt;
+</description>
+        <pubDate>Sun, 06 Mar 2016 21:17:59 -0500</pubDate>
+        <link>http://jordenlowe.com//2016/03/07/ramlsharp-and-web-api-help-pages/</link>
+        <guid isPermaLink="true">http://jordenlowe.com//2016/03/07/ramlsharp-and-web-api-help-pages/</guid>
+        
+        
+        <category>general</category>
+        
+      </item>
+    
+      <item>
+        <title>Task Parallel Library Basics</title>
+        <description>&lt;div&gt;
+  &lt;p&gt;
+    I was reviewing TPL in C# because I wanted a deeper understanding than my previous talks on the subject. I decided to look at it from a different view point, how does the internals work?
+  &lt;/p&gt;
+  
+  &lt;p&gt;
+    If you read this &lt;a href=&quot;https://msdn.microsoft.com/en-us/library/dd537609(v=vs.110).aspx&quot;&gt;article&lt;/a&gt;, it starts off saying that TPL is an abstraction around ThreadPool. The reason why we want an abstraction is to hide crazy logic from a user and make their lives easier. In the case of TPL, the logic that we are hiding is determining how to schedule in a ThreadPool. Most of the important logic that you would want to manage, that ThreadPools don&amp;#8217;t provide directly are:
+  &lt;/p&gt;
+  
+  &lt;ul&gt;
+    &lt;li&gt;
+      1. Common API for multi-threaded, asynchronous, and parallel code
+    &lt;/li&gt;
+    &lt;li&gt;
+      2. Blocking vs Non-Blocking
+    &lt;/li&gt;
+    &lt;li&gt;
+      3. Cancellations
+    &lt;/li&gt;
+    &lt;li&gt;
+      4. Error Handling
+    &lt;/li&gt;
+    &lt;li&gt;
+      5. Scheduling
+    &lt;/li&gt;
+  &lt;/ul&gt;
+  
+  &lt;h3&gt;
+    Common API
+  &lt;/h3&gt;
+  
+  &lt;p&gt;
+    TPL provides a common API for asynchronous and multi-threading that makes it easy to manage our code. The unfortunate thing is that we can forget what type of &amp;#8220;task&amp;#8221; we are running. Here are some tips; 1. For asynchronous, or IO bound code, remember that the thread is not blocked, and is typically on the same thread as the calling code. If you call an asynchronous task, no other thread is created for your application and that thread it is using can be used to do other things, like how UI frameworks work for Windows Forms and WPF.
+  &lt;/p&gt;
+  
+  &lt;p&gt;
+    2. For multi-threading, or CPU bound code, you are blocking a CPU for &amp;#8220;crunching numbers&amp;#8221;. This would lead to another thread running code. An example would be to do a merge sort, where you give half the list to one thread and half to another thread, join and then merge the results.
+  &lt;/p&gt;
+  
+  &lt;p&gt;
+    The problem comes when you mix the 2 together, like running a multi-threaded code in a asynchronous task would result in NOTHING. Your code would run syncronious because async task would be executing code (blocking) and would have no input or output to defer for. The other way around would work. If you put asyncronious code on its own thread, it would eventually complete, but it would have a problem with the thread context. This is a common problem in UI frameworks, where you make a web api call on one thread and try to update the UI on the main thread. Very important not to confuse the 2 different types of calls.
+  &lt;/p&gt;
+  
+  &lt;h3&gt;
+    Blocking vs Non-Blocking
+  &lt;/h3&gt;
+  
+  &lt;p&gt;
+    So, you may want to know how to &amp;#8220;block&amp;#8221; or &amp;#8220;non-block&amp;#8221; depending on your code&amp;#8217;s workflow. There are 2 different calls to note:
+  &lt;/p&gt;
+  
+  &lt;ul&gt;
+    &lt;li&gt;
+      1. Task.Delay
+    &lt;/li&gt;
+    &lt;li&gt;
+      2. Thread.Sleep
+    &lt;/li&gt;
+  &lt;/ul&gt;
+  
+  &lt;p&gt;
+    Task.Delay will delay execution in asynchronous code. Thread.Sleep will pause the current thread. Using Thread.Sleep in async code will cause the main thread to halt. Vice versa Task.Delay will allow the thread to continue in the current thread without blocking. This becomes important when you call Task.Wait on the Task and see that it is still running code, even though it has a delay. Be very careful about which type you use, async or parallel.
+  &lt;/p&gt;
+  
+  &lt;h3&gt;
+    Cancellations
+  &lt;/h3&gt;
+  
+  &lt;p&gt;
+    Task cancellations are VERY important. Say you have a windows service, if you have multiple threads running, how do you stop the service and the work that those threads are working on? If you do not get it right, your service may hang until those threads are done, if they ever finish. What you can do is give each thread a stop service cancellation token. When a cancellation token use invoked, all the threads will automatically stop what they are doing, and report a status of &amp;#8220;Canceled&amp;#8221;. For a full list of all the states of a thread, check out old &lt;a href=&quot;https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskstatus(v=vs.110).aspx&quot;&gt;MSDN&lt;/a&gt;. To catch all the canceled threads, you could use ContinueWith and filter based on statuses of the thread to know where to route unprocessed requests and shut down.
+  &lt;/p&gt;
+  
+  &lt;h3&gt;
+    Error Handling
+  &lt;/h3&gt;
+  
+  &lt;p&gt;
+    Error handling doesnt bubble up in your code and cause unhandled exceptions. Instead, a status of &amp;#8220;faulted&amp;#8221; will appear in your ContinueWith. Here you can actually look at the thread for the Exception property and handle it appropriately. Another nice thing that TPL handles, vs ThreadPool.
+  &lt;/p&gt;
+  
+  &lt;h3&gt;
+    Scheduling
+  &lt;/h3&gt;
+  
+  &lt;p&gt;
+    The last topic that TPL does better than ThreadPool is Scheduling. Here, check out all the scheduling options you can have: &lt;a href=&quot;https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskcontinuationoptions(v=vs.110).aspx&quot;&gt;https://msdn.microsoft.com/en-us/library/system.threading.tasks.taskcontinuationoptions(v=vs.110).aspx&lt;/a&gt;. What is cool is that the schedulers will manage MOST scenarios no problem. Do you have a long running process (more than a few minutes)? Set the thread&amp;#8217;s TaskContinuationOptions to LongRunning. Most of the other scheduler options have to do with how the ContinueWith operates. Do you want to run only if a Canceled task comes through, or faulted? Use OnlyOnCanceled or OnlyOnFaulted. Whatever you want TPL to do when and after a Task runs, this is how you specify it and it helps the optimizer behind the scenes handle your code.
+  &lt;/p&gt;
+  
+  &lt;p&gt;
+    Hopefully explaining TPL this way helps make it clear what it does that is important and what we should keep in mind with Threads and Asyncrhonus work.
+  &lt;/p&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Mon, 15 Feb 2016 19:00:00 -0500</pubDate>
+        <link>http://jordenlowe.com//2016/02/16/task-parallel-library-basics/</link>
+        <guid isPermaLink="true">http://jordenlowe.com//2016/02/16/task-parallel-library-basics/</guid>
+        
+        <category>.net</category>
+        
+        <category>threading</category>
+        
+        <category>tpl</category>
+        
+        
+        <category>.net</category>
+        
+      </item>
+    
+  </channel>
+</rss>
