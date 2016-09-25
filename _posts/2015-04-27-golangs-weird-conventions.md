@@ -1,6 +1,6 @@
 ---
 id: 12
-title: 'GOLANG&#8217;s weird conventions'
+title: 'GOLANGs weird conventions'
 date: 2015-04-27T00:00:00+00:00
 author: Jorden
 layout: post
