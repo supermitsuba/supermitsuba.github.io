@@ -1,6 +1,6 @@
 ---
 id: 231
-title: 'Post on Hypermedia API&#8217;s in Ruby'
+title: 'Post on Hypermedia API's in Ruby'
 date: 2016-06-15T04:40:26+00:00
 author: Jorden
 layout: post
