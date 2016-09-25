@@ -1,6 +1,6 @@
 ---
 id: 16
-title: 'You Don&#8217;t Know JS: Async and Performance: Book Review'
+title: 'You Dont Know JS: Async and Performance: Book Review'
 date: 2014-12-25T00:00:00+00:00
 author: Jorden
 layout: post
