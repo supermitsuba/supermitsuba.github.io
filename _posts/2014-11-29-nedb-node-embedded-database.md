@@ -1,6 +1,6 @@
 ---
 id: 20
-title: 'Nedb &#8211; Node embedded database'
+title: 'Nedb the Node embedded database'
 date: 2014-11-29T00:00:00+00:00
 author: Jorden
 layout: post
