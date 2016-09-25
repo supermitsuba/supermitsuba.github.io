@@ -4,7 +4,7 @@ title: 'You Don&#8217;t Know JS: Async and Performance: Book Review'
 date: 2014-12-25T00:00:00+00:00
 author: Jorden
 layout: post
-guid: 'http://www.fbombcode.com/title/You_Don&#039;t_Know_JS:_Async_and_Performance:_Book_Review'
+guid: 'http://www.fbombcode.com/title/You_Dont_Know_JS:_Async_and_Performance:_Book_Review'
 permalink: /2014/12/25/you-dont-know-js-async-and-performance-book-review/
 categories:
   - javascript
