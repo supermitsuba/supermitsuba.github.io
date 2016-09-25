@@ -3,7 +3,7 @@ id: 4
 title: About the author
 date: 2016-02-28T03:50:56+00:00
 author: Jorden
-layout: page
+layout: default
 guid: http://jordenlowe.com/contact-us/
 ---
 Hello, my name is Jorden Lowe. If you want to get ahold of me, you can use Twitter at JordenLowe or just email me at: <jordenashleylowe@gmail.com>
