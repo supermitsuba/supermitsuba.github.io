@@ -1,6 +1,6 @@
 ---
 id: 225
-title: 'The dynamic typing problem in Ruby (and javascript, python, and etc&#8230;)'
+title: 'The dynamic typing problem in Ruby (and javascript, python, and etc)'
 date: 2016-05-30T05:13:21+00:00
 author: Jorden
 layout: post
