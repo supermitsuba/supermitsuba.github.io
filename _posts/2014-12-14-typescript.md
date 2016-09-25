@@ -1,0 +1,17 @@
+---
+id: 19
+title: TypeScript
+date: 2014-12-14T00:00:00+00:00
+author: Jorden
+layout: post
+guid: http://www.fbombcode.com/title/TypeScript
+permalink: /2014/12/14/typescript/
+categories:
+  - javascript
+  - web
+tags:
+  - javascript
+  - typescript
+  - web
+---
+ <p> I have been writing a project using nothing but javascript. While it has been great because I am learning so much about the language, javascript can be frustrating. In order to help my data type mismatch woes, I tried out using Typescript. </p> <p> <a href="http://en.wikipedia.org/wiki/TypeScript">TypeScript</a> is a language, developed by Microsoft in 2012, to help take care of some maintenance issues with javascript. While it trans-compiles down to javascript, there is a compiler to help find issues you might run into, like not calling a function with all of it&#8217;s parameters. What has helped me the most is looking at the output javascript to see how I should write javascript. You can even write javascript and Typescript will not break what you wrote. </p> <p> So, how easy is this stuff? Well, let me show you by writing a class: </p> <pre class="formatCode"> class SampleClass { private name:string; constructor(name: string){ this.name = name; } printName(){ console.log('This is my name: %s', this.name) } } </pre> <p> Here, we have a class that we would see in a normal, object oriented language. What typescipt will generate this into is this: </p> <pre class="formatCode"> var SampleClass = (function () { function SampleClass(name) { this.name = name; } SampleClass.prototype.printName = function () { console.log('This is my name: %s', this.name); }; return SampleClass; })(); </pre> <p> Awesome! If I didn&#8217;t know how to generate a class in javascript, now I do! It can even work for inheritance or interfaces: </p> <pre class="formatCode"> class SampleClass implements ISampleClass { private name:string; constructor(name: string){ this.name = name; } printName(){ console.log('This is my name: %s', this.name) } } interface ISampleClass { printName(): void; } class SampleInheritance extends SampleClass{ private theDate:Date; constructor(name: string, dateTime:Date) { this.theDate = dateTime; super(name); } } </pre> <p> Using our example class from earlier, we are enforcing the ISampleClass interface and also extending SampleClass to create Inheritance. The result is below: </p> <pre class="formatCode"> var \_\_extends = this.\_\_extends || function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; function \_\_() { this.constructor = d; } \_\_.prototype = b.prototype; d.prototype = new \_\_(); }; var SampleClass = (function () { function SampleClass(name) { this.name = name; } SampleClass.prototype.printName = function () { console.log('This is my name: %s', this.name); }; return SampleClass; })(); var SampleInheritance = (function (\_super) { \\_\_extends(SampleInheritance, \_super); function SampleInheritance(name, dateTime) { this.theDate = dateTime; \_super.call(this, name); } return SampleInheritance; })(SampleClass); </pre> <p> Inheritance in javascript is pretty complicated, but at least Typescript is helping me see how it is done. This is awesome. Now, how would I compile the code? Easy, if you use node, just run this command: </p> <pre class="formatCode"> npm i -g typescript </pre> <p> This will install the compiler so it is in the command line. The command to invoke is tsc. If you want more information, visit the typescript site: <a href="http://www.typescriptlang.org">here</a>. </p>

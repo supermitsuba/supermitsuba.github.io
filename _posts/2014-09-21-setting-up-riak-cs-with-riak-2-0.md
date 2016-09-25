@@ -1,0 +1,18 @@
+---
+id: 24
+title: Setting up Riak CS with Riak 2.0
+date: 2014-09-21T00:00:00+00:00
+author: Jorden
+layout: post
+guid: http://www.fbombcode.com/title/Setting_up_Riak_CS_with_Riak_2.0
+permalink: /2014/09/21/setting-up-riak-cs-with-riak-2-0/
+categories:
+  - database
+  - erlang
+tags:
+  - cs
+  - databases
+  - erlang
+  - riak
+---
+ <p> A while back, a buddy at work was trying to setup Riak and was having some difficulty with it. Recently, I started looking at Riak to use as a key-value database and thought, maybe I will see what the big deal was with Riak CS. </p> <p> The first issue is that Riak 2.0 is new. While most examples have riak.config being used as the new configuration file, most of the Riak CS examples still use the older release examples. This can make it difficult to set up Riak, if it is your first time. Don&#8217;t worry, I have some notes on the example of building a local test environment with Riak CS and Riak 2.0. </p> <p> First, the tutorial I am using is at basho: <a href="http://docs.basho.com/riakcs/latest/tutorials/fast-track/Building-a-Local-Test-Environment/">here</a>. You will noticed that most of the set up for Riak is done via the app.config, which is the old way of configuration, as of 2.0. The 2.0 configuration is almost straight forward and makes it easier to setup than in the old erlang configuration way. To start let&#8217;s dive in: </p> <p style="font-weight:bold"> It starts at step 3: </p> <pre class="formatCode"> {default\_bucket\_props, [{allow\_mult, true}]}, </pre> <p> To translate this to Riak 2.0, first edit the file at /etc/riak/riak.conf and use this setting instead: </p> <pre class="formatCode"> buckets.default.allow\_mult = true </pre> <p> After that, you will need to change out the storage backend, here is a before and after: </p> <pre class="formatCode"> ## before 2.0 {storage\_backend, riak\_kv\_bitcask\_backend} ## after 2.0 storage\_backend = multi ## default is bitcask </pre> <p> After that, we need to configure the multiple backends, which can be: leveldb, memory, multi and bitcask. Here is the version difference for that: </p> <pre class="formatCode"> ## before 2.0 {add\_paths, ["/usr/lib/riak-cs/lib/riak\_cs-1.5.0/ebin"]}, {storage\_backend, riak\_cs\_kv\_multi\_backend}, {multi\_backend\_prefix\_list, [{<<"0b:">>, be\_blocks}]}, {multi\_backend\_default, be\_default}, {multi\_backend, [ {be\_default, riak\_kv\_eleveldb\_backend, [ {max\_open\_files, 50}, {data\_root, "/var/lib/riak/leveldb"} ]}, {be\_blocks, riak\_kv\_bitcask\_backend, [ {data\_root, "/var/lib/riak/bitcask"} ]} ]}, ## after 2.0 storage\_backend = multi multi\_backend.default = be\_default multi\_backend.be\_default.storage\_backend = leveldb multi\_backend.be\_default.leveldb.data\_root = /var/lib/riak/leveldb multi\_backend.be\_block.storage\_backend = bitcask multi\_backend.be\_block.bitcask.data_root = /var/lib/riak/bitcask </pre> <p> Next, you will need to expose some IP&#8217;s. Do note, they default to JUST localhost, so if you want to bind to any network interface, use 0.0.0.0. This will allow other computers to see the ports: </p> <pre class="formatCode"> ## before 2.0 {http, [ {"127.0.0.1", 8098 } ]} {pb, [ {"127.0.0.1", 8087 } ]} ## after 2.0 listener.http.internal = 127.0.0.1:8098 ## and listener.protobuf.internal = 127.0.0.1:8087 </pre> <p> Follow the tutorial as normal, and you should be good to go. The Riak-CS configs still use the erlang configs, so those directions are good. For more information on the configurations of Riak 2.0 file visit, <a href="http://docs.basho.com/riak/latest/ops/advanced/configs/configuration-files">here</a>. Hope this helps! </p>
