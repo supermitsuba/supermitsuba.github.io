@@ -14,5 +14,5 @@ tags:
 ---
 The ergodox!
 
-<img src="/wp-content/uploads/2016/290.JPG" width="200" height="200" />
-<img src="/wp-content/uploads/2016/292.JPG" width="200" height="200" /> 
+<img src="/wp-content/uploads/2016/290.JPG" width="300" />
+<img src="/wp-content/uploads/2016/292.JPG" width="300" /> 
