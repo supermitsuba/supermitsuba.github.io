@@ -14,5 +14,5 @@ tags:
 ---
 The ergodox!
 
-![The ergodox infinity!]({{site.url}}/upload/images/2016/290.jpg)
-![The ergodox infinity!]({{site.url}}/upload/images/2016/292.jpg)
+![The ergodox infinity!]({{site.url}}/wp-content/uploads/2016/290.JPG)
+![The ergodox infinity!]({{site.url}}/wp-content/uploads/2016/292.JPG)
