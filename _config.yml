@@ -28,4 +28,4 @@ github_username:  supermitsuba
 # Build settings
 markdown: kramdown
 theme: minima
-highlighter: pygments
+highlighter: rouge
