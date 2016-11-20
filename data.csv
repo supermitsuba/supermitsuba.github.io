@@ -1,0 +1,136 @@
+What is the Quicksort Implementation?,"        public static void sort(int[] a){
+            sortImpl(a, 0, a.Length-1);
+        }
+
+        public static void sortImpl(int[] a, int left, int right){
+            var i = left;
+            var j = right;
+            var pivot = a[(left+right)/2];
+
+            while(i <= j){
+                while(a[i] < pivot){
+                    i++;
+                }
+
+                while(a[j] > pivot){
+                    j--;
+                }
+
+                if(i <= j){
+                    swap(a, i, j);
+                    i++; 
+                    j--;
+                }
+
+                if(left < j){
+                    sortImpl(a, left, j);
+                }
+
+                if(i < right){
+                    sortImpl(a, i, right);
+                }
+            }
+        }
+
+        private static void swap(int[] array, int index1, int index2){
+            var tmp = array[index1];
+            array[index1] = array[index2];
+            array[index2] = tmp;
+        }"
+What is the Mergesort Implementation?,"        public static void sort(int[] a){
+            var aux = new int[a.Length];
+            sort(a, aux, 0, a.Length-1);
+        }
+
+        private static void sort(int[] a, int[] aux, int lo, int hi){
+            if(hi <= lo) return;
+            int mid = lo + (hi-lo) /2;
+            sort(a, aux, lo, mid);
+            sort(a, aux, mid+1, hi);
+            merge(a, aux, lo, mid, hi);
+        }
+
+        private static void merge(int[] a, int[] aux, int lo, int mid, int hi){
+            for(var k = lo; k <= hi; k++){
+                aux[k] = a[k];
+            }
+
+            int i = lo, j = mid +1;
+            for(int k = lo; k<= hi; k++){
+                if(i > mid)               a[k] = aux[j++];
+                else if(j > hi)           a[k] = aux[i++];
+                else if(aux[j] < aux[i])  a[k] = aux[j++];
+                else                      a[k] = aux[i++];
+            }
+        }"
+What is the Heap/Heapsort Implementation? ,"public class MyHeap {
+        List<int> _data;
+
+        public MyHeap(int[] data){
+            _data = new List<int>();
+            _data.AddRange( data);
+            build_max_heap();
+        }
+
+        public int Count(){
+            return _data.Count;
+        }
+
+        public int extract_max(){
+            var result = this.max();
+            swap(0, _data.Count-1);
+            _data.RemoveAt(_data.Count-1);
+            max_heapify(0);
+            return result;
+        }
+
+        public int max(){
+            if(_data == null || _data.Count == 0) throw new Exception(""not enough elements"");
+
+            return _data[0];
+        }
+
+        public void Insert(int x){
+            _data.Add(x);
+            IncreasingKey(_data.Count-1, x);
+        }
+
+        private void IncreasingKey(int index, int v){
+            _data[index] = v;
+
+            while(index > 0 && _data[index/2] < _data[index]){
+                swap(index, index/2);
+                index = index/2;
+            }
+        }
+
+        private void build_max_heap(){
+            for(var i = _data.Count/2; i >= 0; i--){
+                max_heapify(i);
+            }
+        }
+
+        private void max_heapify(int index){
+            var l = index*2;
+            var r = index*2+1;
+            var largest = index;
+            if(l < _data.Count && _data[l] > _data[largest]) {
+                largest = l;
+            }
+            
+            if(r < _data.Count && _data[r] > _data[largest]){
+                largest = r;
+            }
+            
+            if(largest != index){
+                swap(index, largest);
+                max_heapify(largest);
+            }
+        }
+
+        public void swap(int index1, int index2){
+            var tmp = _data[index1];
+            _data[index1] = _data[index2];
+            _data[index2] = tmp;
+        }
+    }"
