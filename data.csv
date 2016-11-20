@@ -134,3 +134,7 @@ What is the Heap/Heapsort Implementation? ,"public class MyHeap {
             _data[index2] = tmp;
         }
     }"
+What is Quicksorts complexity?,"Best O(nlogn)
+avg O(nlogn)
+worst O(n^2)
+space O(logn)"
