@@ -187,3 +187,62 @@ Access O(n)  O(n)
 Search O(n)  O(n)
 Insert   O(1)  O(1)
 Delete  O(1)  O(1)"
+What is the complexity from worst to best?  i.e O(1) is best and O(n!) is the worst,"1
+log(n)
+n
+n log(n)
+n^2
+2^n
+n!"
+How to do Breathe-First Search?,"public bool BFS (T value) {
+    if(this.value == value) return true;
+
+    var queue = new Queue<T>();
+
+    if(left != null) queue.Enqueue(left);
+    if(right != null) queue.Enqueue(right);
+
+    while(!queue.IsEmpty()) {
+        var node = queue.Dequeue();
+
+        if(node.value == value) { return true; }
+        else {
+            if(node.left != null) queue.Enqueue(node.left);
+            if(node.right != null) queue.Enqueue(node.right);            
+        }
+    }
+
+    return false;
+}
+
+"
+How to do Depth-First Search?,"public bool DFS(Tree<T> value) {
+    bool result = false;
+    if(value == this.value) { return true; }
+    else {
+        result = DFS(this.left);
+        result = DFS(this.right) || result;
+    }
+    return result;
+}
+"
+How to do Binary Search?,"public int search(int[] array, int search) {
+    return searchImpl(array, search, 0, array.Length-1);
+}
+
+public int searchImpl(int[] array, int search, int start, int end){
+    int mid = (start+end)/2;
+    if(array[mid] == search) { return mid; }
+    else {
+        if(end-start <= 1) {
+            return -1;
+        }
+
+        if(search > array[mid]) {
+            return searchImpl(array, search, mid+1, end);
+        }
+        else {
+            return searchImpl(array, search, 0, mid-1);
+        }
+    }
+}"
