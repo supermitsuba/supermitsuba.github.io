@@ -138,3 +138,52 @@ What is Quicksorts complexity?,"Best O(nlogn)
 avg O(nlogn)
 worst O(n^2)
 space O(logn)"
+Why use mergesort vs quicksort vs heapsort?,"Quicksort - it is done in place, unstable and log(n) memory, worst case O(n^2) time
+Mergesort - time O(n log(n)), space O(n), and is stable
+Heapsort - not stable, but time O(n log(n)) and space O(1). You also have to maintain a heap"
+What is Mergesort complexity?,"Best O(nlogn)
+avg O(nlogn)
+worst O(n logn)
+space O(1)"
+What is the complexity of using an Array?,"Here is the averge and worst case
+
+Access O(1)  O(1)
+Search O(n)  O(n)
+Insert O(n)  O(n)
+Delete O(n)  O(n)"
+What is the complexity of BTree operations?,"Here is the averge and worst case
+
+Access O(log n)  O(log n)
+Search O(log n)  O(log n)
+Insert   O(log n)  O(log n)
+Delete  O(log n)  O(log n)"
+What is the complexity of Binary Search Tree?,"Here is the averge and worst case
+
+Access O(log n)  O(n)
+Search O(log n)  O(n)
+Insert   O(log n)  O(ln)
+Delete  O(log n)  O(n)"
+What is the complexity of Hash table?,"Here is the averge and worst case
+
+Access O(1)  O(n)
+Search O(1)  O(n)
+Insert   O(1)  O(n)
+Delete  O(1)  O(n)"
+What is the complexity of Linked List?,"Here is the averge and worst case
+
+Access O(n)  O(n)
+Search O(n)  O(n)
+Insert   O(1)  O(1)
+Delete  O(1)  O(1)"
+What is the complexity of Queue?,"Here is the averge and worst case
+
+Access O(n)  O(n)
+Search O(n)  O(n)
+Insert   O(1)  O(1)
+Delete  O(1)  O(1)"
+What is the complexity of Stack?,"Here is the averge and worst case
+
+Access O(n)  O(n)
+Search O(n)  O(n)
+Insert   O(1)  O(1)
+Delete  O(1)  O(1)"
