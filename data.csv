@@ -246,3 +246,72 @@ public int searchImpl(int[] array, int search, int start, int end){
         }
     }
 }"
+How to implement a Trie?,"class TrieNode {
+    private final char value;
+    private final HashMap<Character, TrieNode> children;
+    
+    public TrieNode(char v){
+        value = v;
+        children = new HashMap<>();
+    }
+    
+    public char GetCharValue() {
+        return value;
+    }
+    
+    public TrieNode FindNode(char value) {
+        if(children.containsKey(value)){
+            return children.get(value);
+        }
+        else{
+            return null;
+        }
+    }
+    
+    public void AddNode(char key, TrieNode newNode){
+        if(!children.containsKey(key)) {
+            children.put(key, newNode);
+        }
+    }
+}
+
+public class Trie {
+    TrieNode root;
+    
+    public Trie(){
+        root = new TrieNode(' ');
+    }
+    
+    public void InsertWord(String word){
+        TrieNode currentNode = root;
+        int index = 0;
+        
+        do {
+            if(currentNode.FindNode(word.charAt(index)) == null) {
+                TrieNode childNode = new TrieNode(word.charAt(index));
+                currentNode.AddNode(word.charAt(index), childNode);
+                currentNode = childNode;
+            }
+            else {
+                currentNode = currentNode.FindNode(word.charAt(index));
+            }
+            
+            index++;
+            
+        }while(index < word.length());
+        
+    }
+    
+    public boolean getMatchingPrefix(String input)  {
+        TrieNode currentNode = root;
+        boolean result = true;
+        
+        for(int i =0; i < input.length(); i++) {
+            currentNode = currentNode.FindNode(input.charAt(i));
+            
+            if(currentNode == null) return false;
+        }
+        
+        return result;
+    }  
+}"
