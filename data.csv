@@ -315,3 +315,36 @@ public class Trie {
         return result;
     }  
 }"
+What is the Space of Adjacency list?,O(V+E)
+Navigating a graph using BFS on an Adjacency List,"public class AdjList {
+
+        public void BFS(string start, Dictionary<string, List<string>> list){
+            var levels = new Dictionary<string, bool>();
+            Console.WriteLine(""Start Node: {0}\nChildren Nodes: "", start);
+            PrintList(list[start]);
+            var queue = new Queue<string>();
+            EnqueueChildren(queue, list[start], levels);
+
+            while(queue.Count > 0){
+                start = queue.Dequeue();
+                EnqueueChildren(queue, list[start], levels);
+                Console.WriteLine(""Start Node: {0}\nChildren Nodes: "", start);
+                PrintList(list[start]);
+            }
+        }
+
+        public void PrintList(List<string> list){
+            foreach(var item in list){
+                Console.WriteLine(""{0}\n"", item);
+            }
+        }
+
+        public void EnqueueChildren(Queue<string> queue, List<string> list, Dictionary<string, bool> levels){
+            foreach(var item in list){
+                if(!levels.ContainsKey(item)){
+                    levels[item] = true;
+                    queue.Enqueue(item);
+                }
+            }
+        }
+    }"
