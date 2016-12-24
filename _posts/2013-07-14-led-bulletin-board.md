@@ -41,5 +41,5 @@ tags:
   <p>
     So for now, it works fine, but I plan to use Node instead, to expose a restful web service to send messages and to update the board with information. Here are some pictures:
   </p>
-  <img src="/wp-content/uploads/2016/20/led.jpg" width="200">
+  <img src="/wp-content/uploads/2016/led.jpg" width="200">
 </div>
