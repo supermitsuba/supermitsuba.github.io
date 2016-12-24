@@ -42,4 +42,12 @@ tags:
     So for now, it works fine, but I plan to use Node instead, to expose a restful web service to send messages and to update the board with information. Here are some pictures:
   </p>
   <img src="/wp-content/uploads/2016/led.jpg" width="200">
+  <p>
+  <h2>UPDATE!</h2>
+  <p>
+    Here is the server source code for the led sign:  https://github.com/supermitsuba/SMSpiService
+    Here is the client source code for the led sign:  https://github.com/supermitsuba/SMSpi
+    Arduino source code coming soon.
+  </p>
+  </p>
 </div>
