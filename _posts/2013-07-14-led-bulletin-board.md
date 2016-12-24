@@ -45,8 +45,8 @@ tags:
   <p>
   <h2>UPDATE!</h2>
   <p>
-    <p>Here is the server source code for the led sign:  <a href="https://github.com/supermitsuba/SMSpiService" /></p>
-    <p>Here is the client source code for the led sign:  <a href="https://github.com/supermitsuba/SMSpi" /></p>
+    <p>Here is the server source code for the led sign:  <a href="https://github.com/supermitsuba/SMSpiService" >server</a></p>
+    <p>Here is the client source code for the led sign:  <a href="https://github.com/supermitsuba/SMSpi" >client</a></p>
     <p>Arduino source code coming soon.</p>
   </p>
   </p>
