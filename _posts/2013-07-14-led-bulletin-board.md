@@ -39,6 +39,7 @@ tags:
   </p>
   
   <p>
-    So for now, it works fine, but I plan to use Node instead, to expose a restful web service to send messages and to update the board with information. Any questions about the LED sign, please let me know.
+    So for now, it works fine, but I plan to use Node instead, to expose a restful web service to send messages and to update the board with information. Here are some pictures:
   </p>
+  <img src="/wp-content/uploads/2016/20/led.jpg" width="200">
 </div>
