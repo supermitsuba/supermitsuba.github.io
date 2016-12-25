@@ -28,7 +28,7 @@ On the client side, I created a node script and a c executable.  The c executabl
 
 So, after that, here are the images:
 
-<img src="/wp-content/uploads/2016/1.jpg" width="200">
-<img src="/wp-content/uploads/2016/2.jpg" width="200">
+<img src="/wp-content/uploads/2016/1.jpg" width="600">
+<img src="/wp-content/uploads/2016/2.jpg" width="600">
 
 For the web site, I used [twitter bootstrap](http://getbootstrap.com/) and [chart.js](http://www.chartjs.org/).  This gives it a decent way to view the graphs, even on a mobile device.
