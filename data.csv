@@ -348,3 +348,13 @@ Navigating a graph using BFS on an Adjacency List,"public class AdjList {
             }
         }
     }"
+How to create a hashtable?,"1. Call an objects GetHashCode()
+2. next do a mod on this and the length of the array.
+  * Ex: array length is 10 and the hash code is 11:  11 mod 10 = 1 bucket
+3. in the bucket is a list, you want to cruise through the list comparing the hashcode, 11
+4. if found, replace the objects
+5. if not found, add a new object"
+What is P?,P is the set of all decision problems which can be solved in polynomial time by a deterministic Turing machine.
+What is NP?,"NP is the set of all decision problems (questions with a yes-or-no answer) for which the 'yes'-answers can be verified in polynomial time (O(nk) where n is the problem size, and k is a constant) by a deterministic Turing machine."
+What is NP-complete?,A problem x that is in NP is also in NP-Complete if and only if every other problem in NP can be quickly (ie. in polynomial time) transformed into x.
+NP-HARD?,NP-Hard are problems that are at least as hard as the hardest problems in NP.
