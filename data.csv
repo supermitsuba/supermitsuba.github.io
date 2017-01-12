@@ -1082,3 +1082,11 @@ X | X = X","boolean getBit(int num., int i) {
 	 int mask = ~(1 « i);
  	 return num & mask;
   }"
+"Probability of A or B", "P(A or B) = P(A) + P(B) - P(A and B)"
+"Probability of A and B", "P(A and B) = P(B given A) P(A)"
+"Independence", "If A and B are independent (that is, one happening tells you nothing about the other
+happening), then P(A and B) = P(A) P(B).This rule simply comesfrom recognizing
+thatP(B given A) = P(B),since A indicates nothing about B."
+"Mutually Exclusive", "If A and B are mutually exclusive (that is, if one happens, then the other cannot happen),
+then P(A or B) = P(A) + P(B).This is because P(A and B) = 0, so this term is
+removed from the earlier P(A or B) equation."
