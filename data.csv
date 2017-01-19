@@ -1090,3 +1090,7 @@ thatP(B given A) = P(B),since A indicates nothing about B."
 "Mutually Exclusive", "If A and B are mutually exclusive (that is, if one happens, then the other cannot happen),
 then P(A or B) = P(A) + P(B).This is because P(A and B) = 0, so this term is
 removed from the earlier P(A or B) equation."
+Factorial, "all the ways you can arrange an object of n = n!"
+Permutation, "all the ways you organize n objects in r ways or = nPr.  Example 10P4 = 10*9*8*7
+Also, n!/(n-r)!"
+Choose, ""
