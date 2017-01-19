@@ -1093,4 +1093,4 @@ removed from the earlier P(A or B) equation."
 Factorial, "all the ways you can arrange an object of n = n!"
 Permutation, "all the ways you organize n objects in r ways or = nPr.  Example 10P4 = 10*9*8*7
 Also, n!/(n-r)!"
-Choose, ""
+Choose, "selecting without order.  nPr/r! = 10!/(10-4)!*4! = nCr"
