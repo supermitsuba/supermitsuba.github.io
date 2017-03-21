@@ -6,7 +6,7 @@ author: Jorden
 layout: default
 guid: http://jordenlowe.com/contact-us/
 ---
-Hello, my name is Jorden Lowe. If you want to get ahold of me, you can use Twitter at JordenLowe or just email me at: <jordenashleylowe@gmail.com>
+Hello, my name is Jorden Lowe. If you want to get ahold of me, you can use Twitter at JordenLowe or just email me at: <blog@lowe.rocks>
 
 I used to live and work in downtown Detroit, but now I work at Panasonic as a Project Lead for a Cloud platform. I produced applications (ranging from web services to win forms to HTML 5).  While most of my experience has been in the .net space, now I write Ruby at my current gig.
 
