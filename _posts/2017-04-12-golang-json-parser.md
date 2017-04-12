@@ -54,21 +54,21 @@ body := `{"coord":{"lon":-83.15,"lat":42.66},"weather":[{"id":800,"main":"Clear"
 
 If I want the temperature, I would have to get "main", which is another dictionary, then I would be able to access "temp" as a float64.  Gets more complicated if I want the description of the conditions because "weather" is an array.  But don't worry, I can up with an awesome mind saving way to grab values from a json file without having to create a model to bind to.  Here are the tips:
 
-1  If the value is a string
- 1.  Just use the dictionary like above but add string as the type
- 2.  Example: dictionary["My"].(string)
-2  If the value is a number
- 1.  Same as string, but make sure to use float64, or int
- 2.  Example: dictionary["Temperature"].(float64)
-3  If boolean
- 1.  Same as above
- 2.  Example: dictionary["Temperature"].(boolean)
-4  If Object
- 1.  This will be a map, so use the structure map[string]interface{}
- 2.  Example: apiResp["main"].(map[string]interface{})
-5  If array
- 1.  Slightly different from object, it will be converted to an array
- 2.  Example: apiResp["weather"].([]interface{})
+1.  If the value is a string
+ *  Just use the dictionary like above but add string as the type
+ *  Example: dictionary["My"].(string)
+2.  If the value is a number
+ *  Same as string, but make sure to use float64, or int
+ *  Example: dictionary["Temperature"].(float64)
+3.  If boolean
+ *  Same as above
+ *  Example: dictionary["Temperature"].(boolean)
+4.  If Object
+ *  This will be a map, so use the structure map[string]interface{}
+ *  Example: apiResp["main"].(map[string]interface{})
+5.  If array
+ *  Slightly different from object, it will be converted to an array
+ *  Example: apiResp["weather"].([]interface{})
 
 These might get more complicated if there are nulls and other scenarios, but this is 80% of all values.  Want a piece of code to test out?  Try this:
 
