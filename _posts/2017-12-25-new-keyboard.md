@@ -18,10 +18,10 @@ Built another keyboard recently called Nyquist.  You can check out the website h
 
 Anyways, I have some code that runs these keyboards here: [My fork of QMK](https://github.com/supermitsuba/qmk_firmware).  This code, while took a while to read, is pretty manageable and I was able to create custom animations pretty easily.  I have 3 keyboards I use:
 
-1.  (Let's split)[https://github.com/supermitsuba/qmk_firmware/tree/master/keyboards/lets_split]
-2.  (Nyquist)[https://github.com/supermitsuba/qmk_firmware/tree/master/keyboards/nyquist]
-3.  (xd75)[https://github.com/supermitsuba/qmk_firmware/tree/master/keyboards/xd75]
+1. [Let's split](https://github.com/supermitsuba/qmk_firmware/tree/master/keyboards/lets_split)
+2. [Nyquist](https://github.com/supermitsuba/qmk_firmware/tree/master/keyboards/nyquist)
+3. [xd75](https://github.com/supermitsuba/qmk_firmware/tree/master/keyboards/xd75)
 
 Each of them have the same animations and base functionality, so I don't have to recreate the wheel each time.  Just have to set up the keys I want and upload the firmware.  Fun times to be able to hack on your keyboard, too.
 
-![My keyboard](/wp-content/uploads/2017/IMG_0239.png | width=400)
+![](/wp-content/uploads/2017/IMG_0239.png)
