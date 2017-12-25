@@ -24,4 +24,4 @@ Anyways, I have some code that runs these keyboards here: [My fork of QMK](https
 
 Each of them have the same animations and base functionality, so I don't have to recreate the wheel each time.  Just have to set up the keys I want and upload the firmware.  Fun times to be able to hack on your keyboard, too.
 
-![My keyboard](/wp-content/uploads/2017/IMG_0239.png)
+![My keyboard](/wp-content/uploads/2017/IMG_0239.png =400x)
