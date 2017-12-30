@@ -1,7 +1,7 @@
 ---
 id: 247
 title: Making a site hoster
-date: 2017-12-25
+date: 2017-12-29
 author: Jorden
 layout: post
 guid: http://jordenlowe.com/?p=247
