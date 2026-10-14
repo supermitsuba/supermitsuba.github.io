@@ -1,0 +1,210 @@
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --ink: #1b2430;
+  --muted: #5a6675;
+  --line: #e1e7ec;
+  --accent: #2f6fb0;
+  --accent-ink: #255a8f;
+  --maxw: 44rem;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+:root[data-theme="dark"] {
+  --bg: #121820;
+  --surface: #1a222c;
+  --ink: #e7ecf1;
+  --muted: #9aa7b4;
+  --line: #2a333f;
+  --accent: #5aa0da;
+  --accent-ink: #7cb7e6;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+.skip {
+  position: absolute;
+  left: -999px;
+}
+.skip:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 10;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.375rem;
+}
+
+a {
+  color: var(--accent-ink);
+  text-underline-offset: 0.15em;
+}
+a:hover { color: var(--accent); }
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+h1, h2, h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.site-header {
+  padding-block: clamp(3rem, 8vw, 5.5rem) clamp(2rem, 6vw, 3.5rem);
+  border-bottom: 1px solid var(--line);
+}
+.eyebrow {
+  margin: 0 0 1rem;
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.site-header h1 {
+  margin: 0;
+  font-size: clamp(1.9rem, 5vw, 2.9rem);
+  max-width: 20ch;
+}
+.lede {
+  margin: 1.25rem 0 0;
+  font-size: 1.15rem;
+  color: var(--muted);
+  max-width: 48ch;
+}
+
+.top-nav {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1.75rem;
+  flex-wrap: wrap;
+  font-size: 0.95rem;
+}
+.top-nav a {
+  text-decoration: none;
+  padding-bottom: 0.15rem;
+  border-bottom: 1px solid transparent;
+}
+.top-nav a:hover { border-bottom-color: currentColor; }
+.theme-toggle {
+  margin-left: auto;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
+  cursor: pointer;
+}
+.theme-toggle:hover {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+
+main { padding-block: clamp(2.5rem, 7vw, 4.5rem); }
+
+section + section { margin-top: clamp(3rem, 8vw, 5rem); }
+
+h2 {
+  font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+  margin: 0 0 0.5rem;
+}
+.section-note {
+  margin: 0 0 2rem;
+  color: var(--muted);
+}
+
+.cases {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+.case {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 1.5rem 1.5rem 1.35rem;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.case:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.case h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+}
+.case h3 a { text-decoration: none; }
+.case p { margin: 0; color: var(--muted); }
+.case .tag {
+  margin-top: 0.85rem;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+
+.button {
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--accent);
+  border-radius: 0.5rem;
+  color: var(--accent-ink);
+}
+.button:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.placeholder {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.site-footer {
+  margin-top: clamp(3rem, 9vw, 6rem);
+  border-top: 1px solid var(--line);
+  padding-block: 2rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (min-width: 40rem) {
+  .cases {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+}

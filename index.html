@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jorden Lowe — Software Engineer</title>
+<meta name="description" content="Jorden Lowe — engineer who owns complete solutions end to end: design, build, host, operate.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#projects">Skip to projects</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <p class="eyebrow">Jorden Lowe</p>
+    <h1>Some of my favorite projects I&rsquo;ve worked on outside of work.</h1>
+    <p class="lede">Click into any of them &mdash; each has its own story about what it is, why I built it, and how it runs.</p>
+    <nav class="top-nav" aria-label="Primary">
+      <a href="#projects">Projects</a>
+      <a href="#about">About</a>
+      <a href="#resume">Résumé</a>
+      <button type="button" id="theme-toggle" class="theme-toggle" aria-pressed="false">Dark</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section id="projects" class="work wrap" aria-labelledby="work-h">
+    <h2 id="work-h">Things I build</h2>
+    <p class="section-note">A mix of platforms, hardware, and tools I built and still run.</p>
+
+    <ul class="cases">
+      <li class="case">
+        <h3><a href="#">Self-hosted GitOps platform</a></h3>
+        <p>Cloud-style deploys on my own hardware &mdash; running a serious, production-grade system as a hobby.</p>
+        <p class="tag">Architecture &middot; ownership</p>
+      </li>
+      <li class="case">
+        <h3><a href="#">soloCup &mdash; taming the AI beast</a></h3>
+        <p>My own tooling to govern and orchestrate AI, used daily, augmented with skills to amplify the tools I build.</p>
+        <p class="tag">AI systems &middot; tooling</p>
+      </li>
+      <li class="case">
+        <h3><a href="#">glitchhost</a></h3>
+        <p>Dynamic app hosting behind a reverse proxy on commodity hardware &mdash; and knowing when to pause it.</p>
+        <p class="tag">Platform &middot; judgment</p>
+      </li>
+      <li class="case">
+        <h3><a href="#">LED server &amp; firmware</a></h3>
+        <p>Go and C++ outside the comfort zone &mdash; depth, range, and AI-elevated practice.</p>
+        <p class="tag">Embedded &middot; full stack</p>
+      </li>
+    </ul>
+  </section>
+
+  <section id="about" class="about wrap" aria-labelledby="about-h">
+    <h2 id="about-h">About</h2>
+    <p class="placeholder">About copy goes here, in Jorden's voice. Placeholder for P2.</p>
+  </section>
+
+  <section id="resume" class="resume wrap" aria-labelledby="resume-h">
+    <h2 id="resume-h">Résumé</h2>
+    <p><a class="button" href="#">Read the résumé</a></p>
+    <p class="placeholder">Link wires to the public résumé build in P2.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>&copy; <span id="year"></span> Jorden Lowe</p>
+  </div>
+</footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById("theme-toggle");
+  var stored = null;
+  try { stored = localStorage.getItem("theme"); } catch (e) {}
+  function apply(theme) {
+    if (theme === "dark") {
+      root.setAttribute("data-theme", "dark");
+      btn.textContent = "Light";
+      btn.setAttribute("aria-pressed", "true");
+    } else {
+      root.removeAttribute("data-theme");
+      btn.textContent = "Dark";
+      btn.setAttribute("aria-pressed", "false");
+    }
+  }
+  apply(stored === "dark" ? "dark" : "light");
+  btn.addEventListener("click", function () {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    apply(next);
+    try { localStorage.setItem("theme", next); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
