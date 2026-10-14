@@ -9,25 +9,26 @@
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-<a class="skip" href="#work">Skip to work</a>
+<a class="skip" href="#projects">Skip to projects</a>
 
 <header class="site-header">
   <div class="wrap">
     <p class="eyebrow">Jorden Lowe</p>
-    <h1>I build complete solutions &mdash; design, host, and operate them end to end.</h1>
-    <p class="lede">Engineer who owns the whole arc of a system, not a slice of it. Below are a few I designed, shipped, and still run.</p>
+    <h1>Some of my favorite projects I&rsquo;ve worked on outside of work.</h1>
+    <p class="lede">Click into any of them &mdash; each has its own story about what it is, why I built it, and how it runs.</p>
     <nav class="top-nav" aria-label="Primary">
-      <a href="#work">Work</a>
+      <a href="#projects">Projects</a>
       <a href="#about">About</a>
       <a href="#resume">Résumé</a>
+      <button type="button" id="theme-toggle" class="theme-toggle" aria-pressed="false">Dark</button>
     </nav>
   </div>
 </header>
 
 <main>
-  <section id="work" class="work wrap" aria-labelledby="work-h">
-    <h2 id="work-h">Work</h2>
-    <p class="section-note">Each one is a system I own: the hard problem first, the plumbing as proof.</p>
+  <section id="projects" class="work wrap" aria-labelledby="work-h">
+    <h2 id="work-h">Things I build</h2>
+    <p class="section-note">A mix of platforms, hardware, and tools I built and still run.</p>
 
     <ul class="cases">
       <li class="case">
@@ -73,6 +74,30 @@
 
 <script>
 document.getElementById("year").textContent = new Date().getFullYear();
+
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById("theme-toggle");
+  var stored = null;
+  try { stored = localStorage.getItem("theme"); } catch (e) {}
+  function apply(theme) {
+    if (theme === "dark") {
+      root.setAttribute("data-theme", "dark");
+      btn.textContent = "Light";
+      btn.setAttribute("aria-pressed", "true");
+    } else {
+      root.removeAttribute("data-theme");
+      btn.textContent = "Dark";
+      btn.setAttribute("aria-pressed", "false");
+    }
+  }
+  apply(stored === "dark" ? "dark" : "light");
+  btn.addEventListener("click", function () {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    apply(next);
+    try { localStorage.setItem("theme", next); } catch (e) {}
+  });
+})();
 </script>
 </body>
 </html>
