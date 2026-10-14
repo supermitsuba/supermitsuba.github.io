@@ -79,6 +79,15 @@ h1, h2, h3 {
   padding-block: clamp(3rem, 8vw, 5.5rem) clamp(2rem, 6vw, 3.5rem);
   border-bottom: 1px solid var(--line);
 }
+.avatar {
+  width: 9.5rem;
+  height: 9.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--line);
+}
 .eyebrow {
   margin: 0 0 1rem;
   font-family: var(--sans);
@@ -224,6 +233,26 @@ h2 {
   padding-block: 2rem;
   color: var(--muted);
   font-size: 0.9rem;
+}
+.social {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0 0 0.75rem;
+  padding: 0;
+}
+.social a {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.social a:hover {
+  color: var(--ink);
+  border-bottom-color: currentColor;
+}
+.header-social {
+  margin-top: 1rem;
+  font-size: 0.95rem;
 }
 
 @media (min-width: 40rem) {
